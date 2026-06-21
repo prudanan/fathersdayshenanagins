@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Father's Day Walk</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0f172a;color:#fff;overflow:hidden}
+.screen{display:none;min-height:100vh;padding:24px;box-sizing:border-box;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.active{display:flex}
+img{max-width:90vw;max-height:50vh;border-radius:18px;display:none}
+button{padding:14px 24px;border:none;border-radius:12px;font-size:1rem;margin-top:20px}
+#stars{position:fixed;inset:0;pointer-events:none;opacity:.4}
+.type{max-width:700px;white-space:pre-wrap;line-height:1.7}
+.progress{position:fixed;top:10px;right:15px}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="progress" id="progress"></div>
+
+<script>
+const memories=[
+{image:"adoption1.jpg",text:"Ahh, adoption day. 8 years ago something changed my life. That something was you."},
+{image:"adoption2.jpg",text:"I'm sure that guy couldn't read my handwriting lol"},
+{image:"house.jpg",text:"Okay really... When are we going to get done signing freaking documents. This one is signing the current house we live in. We need more pictures together."},
+{image:"youngme.jpg",text:"There we go. Who taught this guy how to pose?!?"},
+{image:"helpingme.jpg",text:"Yeesh, Physics was hard, but i PHYSICally couldnt have done it without you. Get it? Anyone? Alright."},
+{image:"silly.jpg",text:"Who let these guys out of the room? They should really start a band."}
+];
+
+const letter=`On a real note, HFFD (Happy Freaking Fathers Day) I counted it out myself, on my fingers, 8 years you have been my father. Even tho Pruett has been stuck in place of your Dad name, I still completely, entirely, totally, and utterly consider you as my father. Ask anyone of my friends what I call you around them. Half the time Pruett, half the time my Dad. Even tho its not a specifically special fathers day, I just wanted to make you this so you truly do recognize how great of a father you are. Not just to me, but to everyone. I seriously dont know the person I would be today without you. Youve helped me grow as a person thru all of these years, and have truly inspired me in so many ways. Youve provided literally everything ive ever needed in life, and I cant name too many fathers that can say that they have done that. Youre very supportive. Also you got jokes. Seriously. Well, I hope that your fathersday is the best. I'd love to be a father just like you someday. With all the love in the world -Connor (PS. I know moms prolly mad bc she didnt get a website lol oops)`;
+</script>
+
+<div id="intro" class="screen active">
+<h1>Happy Father's Day</h1>
+<div class="type" id="introText"></div>
+<button id="startBtn" style="display:none">Begin The Walk</button>
+</div>
+
+<div id="memory" class="screen">
+<h2 id="memTitle"></h2>
+<img id="memImg">
+<div class="type" id="memText"></div>
+<button id="nextBtn" style="display:none">Continue</button>
+</div>
+
+<div id="transition" class="screen">
+<div class="type" id="transitionText"></div>
+<button id="letterBtn" style="display:none">Read Letter</button>
+</div>
+
+<div id="letterScreen" class="screen">
+<div class="type" id="letterText"></div>
+</div>
+
+<script>
+function typeText(el,text,done){
+el.textContent="";
+let i=0;
+const t=setInterval(()=>{
+el.textContent+=text[i++]||"";
+if(i>text.length){clearInterval(t); if(done)done();}
+},25);
+}
+
+const introMsg=`Happy Father's Day.
+
+Before we get to the letter...
+
+Let's take a stroll through the last 8 years you've been my father.
+
+Every picture tells part of a story.`;
+
+typeText(document.getElementById("introText"),introMsg,()=>{
+startBtn.style.display="block";
+});
+
+let index=0;
+
+startBtn.onclick=()=>showMemory(0);
+
+function showMemory(i){
+index=i;
+intro.classList.remove("active");
+transition.classList.remove("active");
+letterScreen.classList.remove("active");
+memory.classList.add("active");
+
+progress.textContent=`Memory ${i+1} / ${memories.length}`;
+memTitle.textContent=`Memory ${i+1}`;
+memImg.style.display="none";
+memText.textContent="";
+nextBtn.style.display="none";
+
+setTimeout(()=>{
+memImg.src=memories[i].image;
+memImg.style.display="block";
+
+typeText(memText,memories[i].text,()=>{
+nextBtn.style.display="block";
+});
+},300);
+}
+
+nextBtn.onclick=()=>{
+if(index<memories.length-1){
+showMemory(index+1);
+}else{
+showTransition();
+}
+};
+
+function showTransition(){
+memory.classList.remove("active");
+transition.classList.add("active");
+progress.textContent="";
+
+typeText(transitionText,
+`One last memory...\n\nThe one we're making right now.\n\nA Father's Day I'll always remember.`,
+()=>letterBtn.style.display="block");
+}
+
+letterBtn.onclick=()=>{
+transition.classList.remove("active");
+letterScreen.classList.add("active");
+typeText(letterText,letter);
+};
+
+const c=document.getElementById('stars');
+const x=c.getContext('2d');
+function resize(){c.width=innerWidth;c.height=innerHeight}
+resize(); addEventListener('resize',resize);
+const s=[...Array(100)].map(()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2}));
+(function a(){
+x.clearRect(0,0,c.width,c.height);
+x.fillStyle="white";
+s.forEach(st=>{x.beginPath();x.arc(st.x,st.y,st.r,0,7);x.fill();st.y+=0.1;if(st.y>innerHeight)st.y=0;});
+requestAnimationFrame(a);
+})();
+</script>
+</body>
+</html>
